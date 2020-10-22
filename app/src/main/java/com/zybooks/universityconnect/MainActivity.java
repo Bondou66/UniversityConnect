@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         if (currentUser == null || !currentUser.isEmailVerified()) {
             setContentView(R.layout.not_verified);
         } else {
-            setContentView(R.layout.activity_main);
+            setContentView(R.layout.activity_maps);
         }
         viewModel = new MainActivityViewModel();
         firestore = FirebaseFirestore.getInstance();
