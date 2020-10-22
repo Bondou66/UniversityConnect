@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "346221759926",
+    "firebase_url": "https://university-connect-af50d.firebaseio.com",
+    "project_id": "university-connect-af50d",
+    "storage_bucket": "university-connect-af50d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:346221759926:android:f1c3fbe69f5c6f3eb6c517",
+        "android_client_info": {
+          "package_name": "com.zybooks.universityconnect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "346221759926-po9a5lqbhlalf75m3hsi6et6h5lbamfo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfkLZmGbGSQ30BH5n-x2Y5ARjAy2p2oGU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "346221759926-po9a5lqbhlalf75m3hsi6et6h5lbamfo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

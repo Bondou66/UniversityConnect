@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">UniversityConnect</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="verify_email">Please verify your email.</string>
 </resources>
