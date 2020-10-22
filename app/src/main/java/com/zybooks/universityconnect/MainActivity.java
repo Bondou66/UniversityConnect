@@ -8,7 +8,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.auth.api.Auth;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         super.onCreate(savedInstanceState);
-        if (!currentUser.isEmailVerified()) {
+        if (currentUser == null || !currentUser.isEmailVerified()) {
             setContentView(R.layout.not_verified);
         } else {
             setContentView(R.layout.activity_main);
