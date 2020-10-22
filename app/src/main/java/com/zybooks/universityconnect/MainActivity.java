@@ -81,5 +81,7 @@ public class MainActivity extends AppCompatActivity {
         if (currentUser != null && !currentUser.isEmailVerified()) {
             currentUser.sendEmailVerification();
         }
+
+        setContentView(R.layout.activity_maps);
     }
 }
