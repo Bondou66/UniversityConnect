@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         super.onCreate(savedInstanceState);
-        if (currentUser == null || !currentUser.isEmailVerified()) {
+        if (currentUser != null && !currentUser.isEmailVerified()) {
             setContentView(R.layout.not_verified);
         } else {
             setContentView(R.layout.activity_maps);
@@ -78,10 +79,20 @@ public class MainActivity extends AppCompatActivity {
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (currentUser != null && !currentUser.isEmailVerified()) {
-            currentUser.sendEmailVerification();
-        }
+        checkVerification();
+    }
 
-        setContentView(R.layout.activity_maps);
+    private void checkVerification() {
+        if (currentUser != null && !currentUser.isEmailVerified()) {
+            String email = currentUser.getEmail();
+            if (email.matches(".edu$")) {
+                currentUser.sendEmailVerification();
+            } else {
+                Toast t =  new Toast(this);
+                t.setText("Please use a .edu account");
+                t.setDuration(Toast.LENGTH_LONG);
+                t.show();
+            }
+        }
     }
 }
