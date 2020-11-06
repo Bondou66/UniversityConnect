@@ -29,7 +29,7 @@ public class SignInActivity extends AppCompatActivity {
     private MainActivityViewModel viewModel;
     private FirebaseFirestore firestore;
     private FirebaseUser currentUser;
-    private FirebaseAuth.AuthStateListener authStateListener;
+    FirebaseAuth.AuthStateListener authStateListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
