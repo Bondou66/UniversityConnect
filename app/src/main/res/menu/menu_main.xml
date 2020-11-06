@@ -7,4 +7,8 @@
         android:id="@+id/menu_sign_out"
         android:title="@string/sign_out" />
 
+    <item
+        android:id="@+id/menu_switch_activity"
+        android:title="@string/messages" />
+
 </menu>

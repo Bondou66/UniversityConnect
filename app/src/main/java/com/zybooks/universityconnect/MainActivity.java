@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +18,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.zybooks.universityconnect.viewmodel.MainActivityViewModel;
+
+import java.util.concurrent.TimeUnit;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -33,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         viewModel = new MainActivityViewModel();
         firestore = FirebaseFirestore.getInstance();
-        if(shouldStartSignIn()) {
+        if (shouldStartSignIn()) {
             startActivityForResult(
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
@@ -44,11 +47,8 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                     currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                    firestore.collection("users")
-                            .document(currentUser.getUid())
-                            .set(currentUser);
                 }
-            };
+            }.onAuthStateChanged(FirebaseAuth.getInstance());
             viewModel.setSigningIn(true);
         } else {
             Toast.makeText(this,
@@ -56,8 +56,9 @@ public class MainActivity extends AppCompatActivity {
                     Toast.LENGTH_LONG)
                     .show();
         }
-        if (currentUser.isEmailVerified()) {
-            setContentView(R.layout.activity_maps);
+        if (currentUser != null && currentUser.isEmailVerified()) {
+            Intent maps = new Intent(this, MapsActivity.class);
+            startActivity(maps);
         } else {
             setContentView(R.layout.not_verified);
         }
@@ -73,18 +74,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_sign_out:
-                AuthUI.getInstance().signOut(this)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                Toast.makeText(MainActivity.this,
-                                        "You have been signed out.",
-                                        Toast.LENGTH_LONG)
-                                        .show();
-                                finish();
-                            }
-                        });
+                signOut();
                 break;
+            case R.id.menu_switch_activity:
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -93,17 +86,41 @@ public class MainActivity extends AppCompatActivity {
         return currentUser == null && !viewModel.getIsSigningIn();
     }
 
-    public void verifyEmail(View view) {
-        currentUser.sendEmailVerification().addOnCompleteListener(this, new OnCompleteListener() {
-            @Override
-            public void onComplete(@NonNull Task task) {
-                // Re-enable button
-                findViewById(R.id.verify_email_button).setEnabled(true);
+    public void verifyEmail(View view) throws InterruptedException {
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        String email = currentUser.getEmail();
+        if (email.matches("$.edu")) {
+            currentUser.sendEmailVerification().addOnCompleteListener(this, new OnCompleteListener() {
+                @Override
+                public void onComplete(@NonNull Task task) {
+                    // Re-enable button
+                    findViewById(R.id.verify_email_button).setEnabled(true);
 
-                Toast.makeText(MainActivity.this,
-                        "Verification email sent to " + currentUser.getEmail(),
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+                    Toast.makeText(MainActivity.this,
+                            "Verification email sent to " + currentUser.getEmail() +
+                                    ".  Please reload the application upon verification",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Toast.makeText(MainActivity.this, "Please use a .edu account",
+                    Toast.LENGTH_LONG).show();
+            TimeUnit.SECONDS.sleep(5);
+            signOut();
+        }
+    }
+
+    private void signOut() {
+        AuthUI.getInstance().signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(MainActivity.this,
+                                "You have been signed out.",
+                                Toast.LENGTH_LONG)
+                                .show();
+                        finish();
+                    }
+                });
     }
 }
