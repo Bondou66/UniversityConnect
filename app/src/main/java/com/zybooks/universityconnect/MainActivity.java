@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
     public void verifyEmail(View view) throws InterruptedException {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         String email = currentUser.getEmail();
-        if (email.matches("$.edu")) {
+        if (email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.+-]+\\.edu$")) {
             currentUser.sendEmailVerification().addOnCompleteListener(this, new OnCompleteListener() {
                 @Override
                 public void onComplete(@NonNull Task task) {
