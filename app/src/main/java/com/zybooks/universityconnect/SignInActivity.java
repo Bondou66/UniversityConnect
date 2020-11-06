@@ -22,19 +22,35 @@ import com.zybooks.universityconnect.viewmodel.MainActivityViewModel;
 import java.util.concurrent.TimeUnit;
 
 
-public class MainActivity extends AppCompatActivity {
+public class SignInActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 9001;
 
     private MainActivityViewModel viewModel;
     private FirebaseFirestore firestore;
     private FirebaseUser currentUser;
+    private FirebaseAuth.AuthStateListener authStateListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (currentUser != null && currentUser.isEmailVerified()) {
+                    Intent messages = new Intent
+                            (SignInActivity.this,
+                                    MessageActivity.class);
+                    startActivity(messages);
+                } else {
+                    setContentView(R.layout.not_verified);
+                }
+            }
+        };
+        authStateListener.onAuthStateChanged(FirebaseAuth.getInstance());
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        viewModel = new MainActivityViewModel();
+        viewModel = MainActivityViewModel.getInstance();
         firestore = FirebaseFirestore.getInstance();
         if (shouldStartSignIn()) {
             startActivityForResult(
@@ -43,12 +59,6 @@ public class MainActivity extends AppCompatActivity {
                             .build(),
                     RC_SIGN_IN
             );
-            new FirebaseAuth.AuthStateListener() {
-                @Override
-                public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                    currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                }
-            }.onAuthStateChanged(FirebaseAuth.getInstance());
             viewModel.setSigningIn(true);
         } else {
             Toast.makeText(this,
@@ -57,10 +67,20 @@ public class MainActivity extends AppCompatActivity {
                     .show();
         }
         if (currentUser != null && currentUser.isEmailVerified()) {
-            Intent maps = new Intent(this, MapsActivity.class);
-            startActivity(maps);
-        } else {
-            setContentView(R.layout.not_verified);
+            Intent messages = new Intent(this, MessageActivity.class);
+            startActivity(messages);
+        }
+        setContentView(R.layout.not_verified);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (currentUser != null && currentUser.isEmailVerified()) {
+            Intent messages = new Intent
+                    (SignInActivity.this,
+                            MessageActivity.class);
+            startActivity(messages);
         }
     }
 
@@ -83,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean shouldStartSignIn() {
-        return currentUser == null && !viewModel.getIsSigningIn();
+        return currentUser == null && !viewModel.isSigningIn();
     }
 
     public void verifyEmail(View view) throws InterruptedException {
@@ -96,26 +116,27 @@ public class MainActivity extends AppCompatActivity {
                     // Re-enable button
                     findViewById(R.id.verify_email_button).setEnabled(true);
 
-                    Toast.makeText(MainActivity.this,
+                    Toast.makeText(SignInActivity.this,
                             "Verification email sent to " + currentUser.getEmail() +
                                     ".  Please reload the application upon verification",
                             Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
-            Toast.makeText(MainActivity.this, "Please use a .edu account",
+            Toast.makeText(SignInActivity.this, "Please use a .edu account",
                     Toast.LENGTH_LONG).show();
             TimeUnit.SECONDS.sleep(5);
             signOut();
         }
     }
 
-    private void signOut() {
+    public void signOut() {
+        viewModel.setSigningOut(true);
         AuthUI.getInstance().signOut(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Toast.makeText(MainActivity.this,
+                        Toast.makeText(SignInActivity.this,
                                 "You have been signed out.",
                                 Toast.LENGTH_LONG)
                                 .show();

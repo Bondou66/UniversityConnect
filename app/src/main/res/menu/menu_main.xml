@@ -9,6 +9,6 @@
 
     <item
         android:id="@+id/menu_switch_activity"
-        android:title="@string/messages" />
+        android:title="@string/switch_activity" />
 
 </menu>
