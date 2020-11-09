@@ -25,6 +25,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.zybooks.universityconnect.R;
 import com.zybooks.universityconnect.viewmodel.MainActivityViewModel;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 public class MessageActivity extends AppCompatActivity {
 
     private FloatingActionButton fab;
@@ -48,19 +52,13 @@ public class MessageActivity extends AppCompatActivity {
             public void onClick(View view) {
                 EditText input = (EditText)findViewById(R.id.input);
 
-                // Read the input field and push a new instance
-                // of ChatMessage to the Firebase database
-                // TODO : Needs to use firestore rather than Firebase database
-//                FirebaseDatabase.getInstance()
-//                        .getReference()
-//                        .push()
-//                        .setValue(new ChatMessage(input.getText().toString(),
-//                                FirebaseAuth.getInstance()
-//                                        .getCurrentUser()
-//                                        .getDisplayName())
-//                        );
-
-                // Clear the input
+                Map<String, Object> message = new HashMap<>();
+                message.put("Text", input.getText().toString());
+                message.put("Username", currentUser.getDisplayName());
+                message.put("Uid", currentUser.getUid());
+                message.put("TimeSent", new Date().getTime());
+                firestore.collection("chat").document("test")
+                        .collection("message").add(message);
                 input.setText("");
             }
         });
