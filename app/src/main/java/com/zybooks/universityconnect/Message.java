@@ -1,21 +1,20 @@
 package com.zybooks.universityconnect;
 
 
-import java.util.Date;
-
-public class ChatMessage {
+public class Message {
     private String messageText;
     private String messageUser;
+    private String Uid;
     private long messageTime;
 
-    public ChatMessage(String messageText, String messageUser) {
+    public Message(String messageText, String messageUser, String Uid, long messageTime) {
         this.messageText = messageText;
         this.messageUser = messageUser;
-
-        messageTime = new Date().getTime();
+        this.Uid = Uid;
+        this.messageTime = messageTime;
     }
 
-    public ChatMessage() {
+    public Message() {
 
     }
 
@@ -33,6 +32,14 @@ public class ChatMessage {
 
     public void setMessageUser(String messageUser) {
         this.messageUser = messageUser;
+    }
+
+    public String getUid() {
+        return Uid;
+    }
+
+    public void setUid(String uid) {
+        this.Uid = uid;
     }
 
     public long getMessageTime() {

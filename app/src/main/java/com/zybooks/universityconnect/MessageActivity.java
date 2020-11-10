@@ -5,28 +5,28 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.zybooks.universityconnect.R;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.zybooks.universityconnect.viewmodel.MainActivityViewModel;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MessageActivity extends AppCompatActivity {
@@ -34,7 +34,6 @@ public class MessageActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     private FirebaseFirestore firestore;
     private FirebaseUser currentUser;
-    private FirebaseListAdapter<ChatMessage> adapter;
     private MainActivityViewModel viewModel;
 
     @Override
@@ -104,25 +103,14 @@ public class MessageActivity extends AppCompatActivity {
 
     private void displayChatMessages() {
         ListView listOfMessages = (ListView) findViewById(R.id.list_of_messages);
+        try {
+            CollectionReference messagesRef = firestore.collection("chat")
+                    .document("test").collection("message");
+            Query query = messagesRef.orderBy("TimeSent").limit(200);
+            Task<QuerySnapshot> snapshotTask = query.get();
+            List<Message> list = snapshotTask.getResult().toObjects(Message.class);
+        } catch (NullPointerException ignored) {
 
-//        adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,
-//                R.layout.message, firestore) {
-//            @Override
-//            protected void populateView(View v, ChatMessage model, int position) {
-//                TextView messageText = (TextView)v.findViewById(R.id.message_text);
-//                TextView messageUser = (TextView)v.findViewById(R.id.message_user);
-//                TextView messageTime = (TextView)v.findViewById(R.id.message_time);
-//
-//                // Set their text
-//                messageText.setText(model.getMessageText());
-//                messageUser.setText(model.getMessageUser());
-//
-//                // Format the date before showing it
-//                messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)",
-//                        model.getMessageTime()));
-//            }
-//        };
-
-        listOfMessages.setAdapter(adapter);
+        }
     }
 }
