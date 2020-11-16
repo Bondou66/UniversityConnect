@@ -2,19 +2,33 @@ package com.zybooks.universityconnect;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -22,7 +36,13 @@ import com.zybooks.universityconnect.viewmodel.MainActivityViewModel;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    private final int REQUEST_LOCATION_PERMISSIONS = 0;
+
+    private float zoomLevel = 15;
     private GoogleMap mMap;
+    private FusedLocationProviderClient client;
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
     private MainActivityViewModel viewModel;
 
     @Override
@@ -34,7 +54,79 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(3000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult != null) {
+                    for (Location location : locationResult.getLocations()) {
+                        updateMap(location);
+                    }
+                }
+            }
+        };
+
+        client = LocationServices.getFusedLocationProviderClient(this);
     }
+
+    private void updateMap(Location location) {
+        LatLng myLatLng = new LatLng(location.getLatitude(),
+                location.getLongitude());
+
+        // Place a marker at the current location
+        MarkerOptions myMarker = new MarkerOptions()
+                .title("Here you are!")
+                .position(myLatLng);
+
+        // Remove previous marker
+        mMap.clear();
+
+        // Add new marker
+        mMap.addMarker(myMarker);
+
+        // Move and zoom to current location at the street level
+        CameraUpdate update = CameraUpdateFactory.
+                newLatLngZoom(myLatLng, zoomLevel);
+        mMap.animateCamera(update);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        client.removeLocationUpdates(locationCallback);
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (hasLocationPermission()) {
+            client.requestLocationUpdates(locationRequest, locationCallback, null);
+        }
+    }
+
+    private boolean hasLocationPermission() {
+
+        // Request fine location permission if not already granted
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_LOCATION_PERMISSIONS);
+
+            return false;
+        }
+
+        return true;
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -76,7 +168,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     /**
      * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
+     * s     * This callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
      * we just add a marker near Sydney, Australia.
      * If Google Play services is not installed on the device, the user will be prompted to install
@@ -91,5 +183,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+            @Override
+            public void onCameraMove() {
+                CameraPosition cameraPosition = mMap.getCameraPosition();
+                zoomLevel = cameraPosition.zoom;
+            }
+        });
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker){
+                Toast.makeText(MapsActivity.this, "Lat: " +
+                        marker.getPosition().latitude + "\nLong: " + marker.getPosition().longitude,
+                        Toast.LENGTH_LONG).show();
+                return false;
+            }
+        });
     }
 }
