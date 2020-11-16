@@ -9,6 +9,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
@@ -27,6 +28,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -38,7 +40,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private final int REQUEST_LOCATION_PERMISSIONS = 0;
 
-    private float zoomLevel = 15;
+    private float zoomLevel;
     private GoogleMap mMap;
     private FusedLocationProviderClient client;
     private LocationRequest locationRequest;
@@ -54,7 +56,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
+        zoomLevel = 20;
         locationRequest = new LocationRequest();
         locationRequest.setInterval(5000);
         locationRequest.setFastestInterval(3000);
@@ -179,11 +181,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
         mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
             @Override
             public void onCameraMove() {
@@ -201,5 +198,33 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return false;
             }
         });
+
+        drawCircle(new LatLng(33.9281386718, -117.425512075));
+    }
+
+    private void drawCircle(LatLng point){
+
+        // Instantiating CircleOptions to draw a circle around the marker
+        CircleOptions circleOptions = new CircleOptions();
+
+        // Specifying the center of the circle
+        circleOptions.center(point);
+
+        // Radius of the circle
+        circleOptions.radius(20);
+
+        // Border color of the circle
+        circleOptions.strokeColor(Color.BLACK);
+
+        // Fill color of the circle
+        circleOptions.fillColor(0x30ff0000);
+
+        // Border width of the circle
+        circleOptions.strokeWidth(2);
+
+        // Adding the circle to the GoogleMap
+        if (mMap != null) {
+            mMap.addCircle(circleOptions);
+        }
     }
 }
