@@ -41,10 +41,10 @@ public class SignInActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 currentUser = FirebaseAuth.getInstance().getCurrentUser();
                 if (currentUser != null && currentUser.isEmailVerified()) {
-                    Intent messages = new Intent
+                    Intent chat = new Intent
                             (SignInActivity.this,
-                                    MessageActivity.class);
-                    startActivity(messages);
+                                    ChatActivity.class);
+                    startActivity(chat);
                 } else {
                     setContentView(R.layout.not_verified);
                 }
@@ -64,8 +64,8 @@ public class SignInActivity extends AppCompatActivity {
                     .show();
         }
         if (currentUser != null && currentUser.isEmailVerified()) {
-            Intent messages = new Intent(this, MessageActivity.class);
-            startActivity(messages);
+            Intent chat = new Intent(this, ChatActivity.class);
+            startActivity(chat);
         }
         setContentView(R.layout.not_verified);
     }
@@ -74,10 +74,10 @@ public class SignInActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         if (currentUser != null && currentUser.isEmailVerified()) {
-            Intent messages = new Intent
+            Intent chat = new Intent
                     (SignInActivity.this,
-                            MessageActivity.class);
-            startActivity(messages);
+                            ChatActivity.class);
+            startActivity(chat);
         }
     }
 
