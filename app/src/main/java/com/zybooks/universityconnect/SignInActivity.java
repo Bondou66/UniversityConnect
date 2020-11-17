@@ -13,12 +13,9 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.zybooks.universityconnect.viewmodel.MainActivityViewModel;
 
@@ -58,12 +55,7 @@ public class SignInActivity extends AppCompatActivity {
         viewModel = MainActivityViewModel.getInstance();
         firestore = FirebaseFirestore.getInstance();
         if (shouldStartSignIn()) {
-            startActivityForResult(
-                    AuthUI.getInstance()
-                            .createSignInIntentBuilder()
-                            .build(),
-                    RC_SIGN_IN
-            );
+            signIn();
             viewModel.setSigningIn(true);
         } else {
             Toast.makeText(this,
@@ -152,8 +144,21 @@ public class SignInActivity extends AppCompatActivity {
                                 "You have been signed out.",
                                 Toast.LENGTH_LONG)
                                 .show();
-                        finish();
+                        setContentView(R.layout.sign_in);
                     }
                 });
+    }
+
+    public void signIn(View view){
+        signIn();
+    }
+
+    private void signIn() {
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .build(),
+                RC_SIGN_IN
+        );
     }
 }

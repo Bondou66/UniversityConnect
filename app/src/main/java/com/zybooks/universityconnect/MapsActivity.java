@@ -38,7 +38,8 @@ import com.zybooks.universityconnect.viewmodel.MainActivityViewModel;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private final int REQUEST_LOCATION_PERMISSIONS = 0;
+    private final double CIRCLE_RADIUS = 45.72;
+    private final int STROKE_WIDTH = 2;
 
     private float zoomLevel;
     private GoogleMap mMap;
@@ -56,7 +57,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        zoomLevel = 20;
+        zoomLevel = 18;
         locationRequest = new LocationRequest();
         locationRequest.setInterval(5000);
         locationRequest.setFastestInterval(3000);
@@ -87,6 +88,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Remove previous marker
         mMap.clear();
+        drawCircle(new LatLng(33.9268, -117.4223));
+        drawCircle(new LatLng(33.9293, -117.4271));
+        drawCircle(new LatLng(33.9294, -117.4231));
+        drawCircle(new LatLng(33.9317, -117.4249));
+        drawCircle(new LatLng(33.9302, -117.4237));
 
         // Add new marker
         mMap.addMarker(myMarker);
@@ -119,6 +125,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
+            int REQUEST_LOCATION_PERMISSIONS = 0;
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_LOCATION_PERMISSIONS);
@@ -157,7 +164,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                         "You have been signed out.",
                                         Toast.LENGTH_LONG)
                                         .show();
-                                finish();
+                                setContentView(R.layout.sign_in);
                             }
                         });
                 break;
@@ -198,8 +205,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return false;
             }
         });
-
-        drawCircle(new LatLng(33.9281386718, -117.425512075));
     }
 
     private void drawCircle(LatLng point){
@@ -211,7 +216,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         circleOptions.center(point);
 
         // Radius of the circle
-        circleOptions.radius(20);
+        circleOptions.radius(CIRCLE_RADIUS);
 
         // Border color of the circle
         circleOptions.strokeColor(Color.BLACK);
@@ -220,11 +225,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         circleOptions.fillColor(0x30ff0000);
 
         // Border width of the circle
-        circleOptions.strokeWidth(2);
+        circleOptions.strokeWidth(STROKE_WIDTH);
 
         // Adding the circle to the GoogleMap
-        if (mMap != null) {
-            mMap.addCircle(circleOptions);
-        }
+        mMap.addCircle(circleOptions);
     }
 }

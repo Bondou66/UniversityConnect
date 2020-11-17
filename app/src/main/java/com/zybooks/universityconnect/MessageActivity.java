@@ -56,7 +56,7 @@ public class MessageActivity extends AppCompatActivity {
                 message.put("Username", currentUser.getDisplayName());
                 message.put("Uid", currentUser.getUid());
                 message.put("TimeSent", new Date().getTime());
-                firestore.collection("chat").document("test")
+                firestore.collection("chat").document("plaza")
                         .collection("message").add(message);
                 input.setText("");
             }
@@ -90,7 +90,7 @@ public class MessageActivity extends AppCompatActivity {
                                         "You have been signed out.",
                                         Toast.LENGTH_LONG)
                                         .show();
-                                finish();
+                                setContentView(R.layout.sign_in);
                             }
                         });
                 break;
@@ -105,7 +105,7 @@ public class MessageActivity extends AppCompatActivity {
         ListView listOfMessages = (ListView) findViewById(R.id.list_of_messages);
         try {
             CollectionReference messagesRef = firestore.collection("chat")
-                    .document("test").collection("message");
+                    .document("plaza").collection("message");
             Query query = messagesRef.orderBy("TimeSent").limit(200);
             Task<QuerySnapshot> snapshotTask = query.get();
             List<Message> list = snapshotTask.getResult().toObjects(Message.class);
