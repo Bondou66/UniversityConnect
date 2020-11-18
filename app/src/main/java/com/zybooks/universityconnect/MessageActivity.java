@@ -89,6 +89,9 @@ public class MessageActivity extends AppCompatActivity {
             case R.id.menu_switch_activity:
                 Intent maps = new Intent(this, MapsActivity.class);
                 startActivity(maps);
+            case R.id.menu_profile:
+                Intent profile = new Intent(this, ProfileActivity.class);
+                startActivity(profile);
         }
         return super.onOptionsItemSelected(item);
     }

@@ -152,6 +152,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             case R.id.menu_switch_activity:
                 Intent chat = new Intent(this, ChatActivity.class);
                 startActivity(chat);
+            case R.id.menu_profile:
+                Intent profile = new Intent(this, ProfileActivity.class);
+                startActivity(profile);
         }
         return super.onOptionsItemSelected(item);
     }

@@ -8,4 +8,5 @@
     <string name="sign_in">Please sign in</string>
     <string name="sign_in1">Sign In</string>
     <string name="enter_chat">Enter Chat</string>
+    <string name="profile_activity">Profile</string>
 </resources>

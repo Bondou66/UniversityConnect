@@ -11,4 +11,8 @@
         android:id="@+id/menu_switch_activity"
         android:title="@string/switch_activity" />
 
+    <item
+        android:id="@+id/menu_profile"
+        android:title="@string/profile_activity" />
+
 </menu>
