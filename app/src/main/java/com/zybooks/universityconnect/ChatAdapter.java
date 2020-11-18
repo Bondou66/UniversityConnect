@@ -32,8 +32,5 @@ public class ChatAdapter extends ArrayAdapter<DocumentSnapshot> {
         nameTextView.setText(current.getId());
 
         return listItemView;
-
-
     }
-
 }

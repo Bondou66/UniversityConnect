@@ -24,13 +24,13 @@ import com.zybooks.universityconnect.viewmodel.MainActivityViewModel;
 
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ChatActivity extends AppCompatActivity {
 
+    public static final String EXTRA_MESSAGE = "com.example.EXTRA_MESSAGE";
 
-    FirebaseFirestore firestore;
-    ArrayList<DocumentSnapshot> chats;
+    private FirebaseFirestore firestore;
+    private ArrayList<DocumentSnapshot> chats;
     private MainActivityViewModel viewModel;
 
     @Override
@@ -39,14 +39,6 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
         viewModel = MainActivityViewModel.getInstance();
         firestore = FirebaseFirestore.getInstance();
-        firestore.collection("chat").document("plaza")
-                .collection("message").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                list.get(0);
-            }
-        });
         firestore.collection("chat").get().addOnSuccessListener(
                 new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -61,7 +53,10 @@ public class ChatActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         String chatName = chats.get(i).getId();
-                        Intent message = new Intent(ChatActivity.this, MessageActivity.class);
+
+                        Intent message = new Intent(ChatActivity.this,
+                                MessageActivity.class);
+                        message.putExtra(EXTRA_MESSAGE, chatName);
                         startActivity(message);
                     }
                 });
