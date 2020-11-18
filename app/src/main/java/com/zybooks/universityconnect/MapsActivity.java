@@ -148,15 +148,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Intent signIn = new Intent(this, SignInActivity.class);
                 signIn.putExtra(EXTRA_SIGNING_OUT, true);
                 startActivity(signIn);
-                break;
-            case R.id.menu_switch_activity:
+                return true;
+
+            case R.id.menu_chats:
                 Intent chat = new Intent(this, ChatActivity.class);
                 startActivity(chat);
+                return true;
+
+            case R.id.menu_map:
+                Intent maps = new Intent(this, MapsActivity.class);
+                startActivity(maps);
+                return true;
+
             case R.id.menu_profile:
                 Intent profile = new Intent(this, ProfileActivity.class);
                 startActivity(profile);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     /**

@@ -10,21 +10,43 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class ProfileActivity extends AppCompatActivity {
+import static com.zybooks.universityconnect.MessageActivity.EXTRA_SIGNING_OUT;
 
-    private TextView nameTxtView, emailTxtView, phoneTxtView;
-    private ImageView userImageView, emailImageView, phoneImageView;
+public class ProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
-        nameTxtView = findViewById(R.id.user_name);
-        emailTxtView = findViewById(R.id.email);
-        phoneTxtView = findViewById(R.id.phone_number);
-
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_sign_out:
+                Intent signIn = new Intent(this, SignInActivity.class);
+                signIn.putExtra(EXTRA_SIGNING_OUT, true);
+                startActivity(signIn);
+                return true;
+
+            case R.id.menu_chats:
+                Intent chat = new Intent(this, ChatActivity.class);
+                startActivity(chat);
+                return true;
+
+            case R.id.menu_map:
+                Intent maps = new Intent(this, MapsActivity.class);
+                startActivity(maps);
+                return true;
+
+            case R.id.menu_profile:
+                Intent profile = new Intent(this, ProfileActivity.class);
+                startActivity(profile);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
 }

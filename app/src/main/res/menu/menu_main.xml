@@ -8,8 +8,12 @@
         android:title="@string/sign_out" />
 
     <item
-        android:id="@+id/menu_switch_activity"
-        android:title="@string/switch_activity" />
+        android:id="@+id/menu_chats"
+        android:title="@string/chats_activity" />
+
+    <item
+        android:id="@+id/menu_map"
+        android:title="@string/title_activity_maps" />
 
     <item
         android:id="@+id/menu_profile"

@@ -4,9 +4,9 @@
     <string name="verify_email">Please verify your email.</string>
     <string name="title_activity_maps">Map</string>
     <string name="send_email">Send email</string>
-    <string name="switch_activity">Switch</string>
     <string name="sign_in">Please sign in</string>
     <string name="sign_in1">Sign In</string>
     <string name="enter_chat">Enter Chat</string>
     <string name="profile_activity">Profile</string>
+    <string name="chats_activity">Chats</string>
 </resources>
