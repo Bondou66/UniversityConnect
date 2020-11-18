@@ -31,7 +31,7 @@ public class MessageAdapter extends ArrayAdapter<DocumentSnapshot> {
         textTextView.setText((String) current.get("Text"));
 
         TextView userTextView = (TextView) listItemView.findViewById(R.id.message_user);
-        textTextView.setText((String) current.get("Username"));
+        userTextView.setText((String) current.get("Username"));
 
         TextView timeTextView = (TextView) listItemView.findViewById(R.id.message_time);
 //        textTextView.setText((Integer) current.get("TimeSent"));

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MessageActivity extends AppCompatActivity {
 
@@ -48,7 +51,8 @@ public class MessageActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_message);
         firestore = FirebaseFirestore.getInstance();
-        displayChatMessages();
+        setRepeatingAsyncTask();
+        //displayChatMessages();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
@@ -63,7 +67,7 @@ public class MessageActivity extends AppCompatActivity {
                 message.put("Uid", currentUser.getUid());
                 message.put("TimeSent", new Date().getTime());
                 firestore.collection("chat").document(currentChat)
-                        .collection("list_message").add(message);
+                        .collection("message").add(message);
                 input.setText("");
             }
         });
@@ -91,7 +95,7 @@ public class MessageActivity extends AppCompatActivity {
 
     private void displayChatMessages() {
         firestore.collection("chat").document(currentChat)
-                .collection("list_message").limit(200).get().addOnSuccessListener(
+                .collection("message").limit(200).orderBy("TimeSent").get().addOnSuccessListener(
                 new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -102,9 +106,9 @@ public class MessageActivity extends AppCompatActivity {
                         ListView listView = (ListView) findViewById(R.id.listview_message);
                         listView.setAdapter(adapter);
 
-                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                            @Override
+//                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 //                                String username = (String) messages.get(i).get("Username"); //TODO: I think if we want
 //                                 TODO:to be able to look at individual users pages through the
 //                                  TODO: chat this is the best place to do it, I'll write the code
@@ -115,11 +119,31 @@ public class MessageActivity extends AppCompatActivity {
 //                                        UserActivity.class);
 //                                user.putExtra(EXTRA_USERNAME, username);
 //                                startActivity(user);
-                            }
-                        });
                     }
                 });
+    }
 
 
+    private void setRepeatingAsyncTask() {
+
+        final Handler handler = new Handler();
+        Timer timer = new Timer();
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        try {
+                            displayChatMessages();
+                        } catch (Exception e) {
+                            // error, do something
+                        }
+                    }
+                });
+            }
+        };
+
+        timer.schedule(task, 0, 1000);  // interval of 1 second
     }
 }

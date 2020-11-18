@@ -1,6 +1,5 @@
 package com.zybooks.universityconnect;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -16,18 +15,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 
-import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -58,12 +53,12 @@ public class ChatActivity extends AppCompatActivity {
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         firestore.collection("chat").get().addOnSuccessListener(
                 new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                displayMessages(queryDocumentSnapshots);
-            }
-        });
-
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        chats = (ArrayList<DocumentSnapshot>) queryDocumentSnapshots.getDocuments();
+                        permanentChats = new ArrayList<>(chats);
+                    }
+                });
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -84,20 +79,14 @@ public class ChatActivity extends AppCompatActivity {
                         }
                     }
                 }
-                displayMessages();
+                displayChats();
             }
         };
 
         client = LocationServices.getFusedLocationProviderClient(this);
     }
 
-    private void displayMessages(QuerySnapshot queryDocumentSnapshots) {
-        chats = (ArrayList<DocumentSnapshot>) queryDocumentSnapshots.getDocuments();
-        permanentChats = new ArrayList<>(chats);
-        displayMessages();
-    }
-
-    private void displayMessages(){
+    private void displayChats(){
         if (chats != null) {
             ChatAdapter adapter = new ChatAdapter(ChatActivity.this, chats);
 
