@@ -17,7 +17,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.zybooks.universityconnect.viewmodel.MainActivityViewModel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,14 +27,20 @@ public class SignInActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 9001;
 
-    private MainActivityViewModel viewModel;
     private FirebaseFirestore firestore;
     private FirebaseUser currentUser;
-    FirebaseAuth.AuthStateListener authStateListener;
+    private FirebaseAuth.AuthStateListener authStateListener;
+    private boolean isSigningIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle extras = getIntent().getExtras();
+        boolean signedOut = false;
+        if (extras != null) {
+            signedOut = extras.getBoolean("com.example.EXTRA_SIGNING_OUT");
+            //The key argument here must match that used in the other activity
+        }
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -50,14 +55,16 @@ public class SignInActivity extends AppCompatActivity {
                 }
             }
         };
+        if (signedOut) {
+            signOut();
+        }
         authStateListener.onAuthStateChanged(FirebaseAuth.getInstance());
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        viewModel = MainActivityViewModel.getInstance();
         firestore = FirebaseFirestore.getInstance();
         if (shouldStartSignIn()) {
             signIn();
-            viewModel.setSigningIn(true);
-        } else {
+            isSigningIn = true;
+        } else if (!signedOut) {
             Toast.makeText(this,
                     "Welcome " + currentUser.getDisplayName(),
                     Toast.LENGTH_LONG)
@@ -100,7 +107,7 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private boolean shouldStartSignIn() {
-        return currentUser == null && !viewModel.isSigningIn();
+        return currentUser == null && !isSigningIn;
     }
 
     public void verifyEmail(View view) throws InterruptedException {
@@ -135,7 +142,6 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     public void signOut() {
-        viewModel.setSigningOut(true);
         AuthUI.getInstance().signOut(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -160,5 +166,6 @@ public class SignInActivity extends AppCompatActivity {
                         .build(),
                 RC_SIGN_IN
         );
+        authStateListener.onAuthStateChanged(FirebaseAuth.getInstance());
     }
 }

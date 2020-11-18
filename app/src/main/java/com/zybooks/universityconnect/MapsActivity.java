@@ -34,10 +34,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.zybooks.universityconnect.viewmodel.MainActivityViewModel;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    public static final String EXTRA_SIGNING_OUT = "com.example.EXTRA_SIGNING_OUT";
     private final double CIRCLE_RADIUS = 45.72;
     private final int STROKE_WIDTH = 2;
 
@@ -46,12 +46,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private FusedLocationProviderClient client;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
-    private MainActivityViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = MainActivityViewModel.getInstance();
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -144,29 +142,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        if (viewModel.isSigningOut()) {
-            finish();
-        }
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_sign_out:
-                viewModel.setSigningOut(true);
-                AuthUI.getInstance().signOut(this)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                Toast.makeText(MapsActivity.this,
-                                        "You have been signed out.",
-                                        Toast.LENGTH_LONG)
-                                        .show();
-                                setContentView(R.layout.sign_in);
-                            }
-                        });
+                Intent signIn = new Intent(this, SignInActivity.class);
+                signIn.putExtra(EXTRA_SIGNING_OUT, true);
+                startActivity(signIn);
                 break;
             case R.id.menu_switch_activity:
                 Intent chat = new Intent(this, ChatActivity.class);
